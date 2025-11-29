@@ -1,10 +1,9 @@
-					TITLE	Programa para determinar si una cadena termina con un sufijo
+					TITLE	Programa para determinar si una cadena termina con un sufijo (Examen Unidad II Regularizaci贸n Tipo b)
 
 ; Prototipos de llamadas al sistema operativo
 GetStdHandle	PROTO	:QWORD
 ReadConsoleW	PROTO	:QWORD,	:QWORD, :QWORD, :QWORD, :QWORD
 WriteConsoleW	PROTO	:QWORD,	:QWORD, :QWORD, :QWORD, :QWORD
-ExitProcess		PROTO	CodigoSalida:QWORD
 
 				.DATA
 Cadena			WORD	80 DUP ( ? )
@@ -29,30 +28,34 @@ Principal		PROC
 				; Alinear espacio en la pila
 				SUB		RSP, 40
 
-				; Obtener manejador est醤dar del teclado
+				; Obtener manejador est谩ndar del teclado
 				MOV		RCX, STD_INPUT
 				CALL	GetStdHandle
 				MOV		ManejadorE, RAX
 
-				; Obtener manejador est醤dar de la consola
+				; Obtener manejador est谩ndar de la consola
 				MOV		RCX, STD_OUTPUT
 				CALL	GetStdHandle
 				MOV		ManejadorS, RAX
 
 				; Solicitar la cadena
 				MOV		RCX, ManejadorS				; Manejador de la consola donde se escribe
-				LEA		RDX, MenEnt01				; Direcci髇 de la cadena a escribir
-				MOV		R8, LENGTHOF MenEnt01		; N鷐ero de caracteres a escribir
-				LEA		R9, Caracteres				; Direcci髇 de la variable donde se guarda el total de caracteres escrito
+				LEA		RDX, MenEnt01				; Direcci贸n de la cadena a escribir
+				MOV		R8, LENGTHOF MenEnt01		; N煤mero de caracteres a escribir
+				LEA		R9, Caracteres				; Direcci贸n de la variable donde se guarda el total de caracteres escrito
 				MOV		R10, 0						; Reservado para uso futuro
+				PUSH	R10
 				CALL	WriteConsoleW
+				POP		R10
 
 				MOV		RCX, ManejadorE				; Manejador del teclado donde se lee la cadena
-				LEA		RDX, Cadena					; Direcci髇 de la cadena a leer
-				MOV		R8, LENGTHOF Cadena			; N鷐ero de caracteres m醲imo a leer
-				LEA		R9, LongCadena				; Direcci髇 de la variable donde se guarda el total de caracteres le韉os
+				LEA		RDX, Cadena					; Direcci贸n de la cadena a leer
+				MOV		R8, LENGTHOF Cadena			; N煤mero de caracteres m谩ximo a leer
+				LEA		R9, LongCadena				; Direcci贸n de la variable donde se guarda el total de caracteres le铆dos
 				MOV		R10, 0						; Reservado para uso futuro
+				PUSH	R10
 				CALL	ReadConsoleW
+				POP		R10
 
 				SUB		LongCadena, 2					; Para eliminar el <Enter>
 
@@ -65,17 +68,21 @@ Principal		PROC
 				; La cadena termina con el sufijo
 				; La cadena no termina con el sufijo
 
-				; Salto de l韓ea
+				; Salto de l铆nea
 				MOV		RCX, ManejadorS				; Manejador de la consola donde se escribe
-				LEA		RDX, SaltoLinea				; Direcci髇 de la cadena a escribir
-				MOV		R8, LENGTHOF SaltoLinea		; N鷐ero de caracteres a escribir
-				LEA		R9, Caracteres				; Direcci髇 de la variable donde se guarda el total de caracteres escrito
+				LEA		RDX, SaltoLinea				; Direcci贸n de la cadena a escribir
+				MOV		R8, LENGTHOF SaltoLinea		; N煤mero de caracteres a escribir
+				LEA		R9, Caracteres				; Direcci贸n de la variable donde se guarda el total de caracteres escrito
 				MOV		R10, 0						; Reservado para uso futuro
+				PUSH	R10
 				CALL	WriteConsoleW
+				POP		R10
 
-				; Salir al sistema operativo
-				MOV		RCX, 0
-				CALL	ExitProcess
+				; Recuperar el espacio de la pila
+				ADD		RSP, 40
 
+				; Salir al S. O
+				MOV		RAX, 0					; C贸digo de salida 0
+				RET								; Retornar al sistema operativo
 Principal		ENDP
 				END
